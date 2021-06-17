@@ -1,0 +1,35 @@
+---
+
+- name: Ensure GitLab runner repository
+  ansible.builtin.shell:
+    cmd:     curl https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh | sudo bash
+    creates: /etc/apt/sources.list.d/runner_gitlab-runner.list
+
+- name: Ensure install Gitlab runner     
+  ansible.builtin.apt:
+    name: gitlab-runner  
+  environment:
+    GITLAB_RUNNER_DISABLE_SKEL: 'true'
+
+- name: Ensure install docker-machine
+  ansible.builtin.shell:
+    cmd: |
+      curl -L https://github.com/docker/machine/releases/download/v0.16.2/docker-machine-`uname -s`-`uname -m` >/tmp/docker-machine &&
+      chmod +x /tmp/docker-machine &&
+      sudo cp /tmp/docker-machine /usr/local/bin/docker-machine
+    creates: /usr/local/bin/docker-machine
+
+- name: Ensure install docker-machine-driver-hetzner
+  ansible.builtin.unarchive:
+    remote_src: yes
+    src:        https://github.com/JonasProgrammer/docker-machine-driver-hetzner/releases/download/{{ gitlab_runner_autoscaling_docker_machine_driver_hetzner_version }}/docker-machine-driver-hetzner_{{ gitlab_runner_autoscaling_docker_machine_driver_hetzner_version }}_linux_amd64.tar.gz
+    dest:       /usr/local/bin
+    owner:      root
+    group:      root
+    mode:       +x,go-w
+
+- name: Ensure gitlab-runner registered
+  ansible.builtin.shell: 
+    cmd: gitlab-runner register {{ gitlab_runner_autoscaling_args | join(' ') }}
+
+...

@@ -1,0 +1,22 @@
+---
+
+dependencies:
+  - name: docker
+    src: git@gitlab.with.de:ansible/ansible-role-docker.git
+    scm: git
+    version: 0.0.4
+
+galaxy_info:
+  role_name: gitlab_runner_autoscaling
+  description: install gitlab-runner autoscaling
+  author: l_with
+  license: MIT
+  license_file: LICENSE
+  min_ansible_version: 2.9
+  platforms:
+  - name: Ubuntu
+    versions: focal
+  - name: EL
+    versions: 8
+
+...
