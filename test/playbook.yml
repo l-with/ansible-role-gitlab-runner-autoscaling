@@ -1,0 +1,36 @@
+---
+
+- hosts: all
+  vars_files: var_vault.yml
+  roles:
+    - role: ../ansible-role-gitlab-runner-autoscaling
+      vars:
+        gitlab_runner_autoscaling_args:
+          - --executor docker+machine
+          - --url https://gitlab.with.de
+          - --run-untagged
+          - --locked=false
+          - --non-interactive
+          - --registration-token ***REMOVED***
+          - --docker-privileged=false
+          - --docker-pull-policy=if-not-present 
+          # - --docker-volumes='/cache'
+          - --docker-image=gitlab/gitlab-runner:alpine-bleeding
+          - --machine-idle-time 1200
+          - --machine-machine-driver "hetzner"
+          - --machine-machine-name "runner-%s"
+          - --machine-machine-options "hetzner-api-token={{ hetzner_api_token }}"
+          - --machine-machine-options "hetzner-image=ubuntu-20.04"
+          - --machine-machine-options "hetzner-server-location=hel1"
+          - --machine-machine-options "hetzner-server-type=cx31"
+          # - --machine-machine-options "engine-registry-mirror=http://$MY_IP:6000"
+          # - --machine-machine-options "engine-insecure-registry=$MY_IP:6000"
+          - --machine-machine-options "engine-install-url=https://releases.rancher.com/install-docker/19.03.9.sh"
+          # - --docker-allowed-images '*'
+          # - --docker-allowed-images '${allowed_images_extra}'
+          # - --docker-allowed-services 'redis:*'
+          # - --docker-allowed-services 'postgres:*'
+          # - --docker-allowed-services 'mysql:*'
+          # - --docker-allowed-services '${allowed_images_extra}'
+
+...

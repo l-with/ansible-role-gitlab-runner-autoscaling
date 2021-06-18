@@ -1,0 +1,3 @@
+fileignoreconfig:
+- filename: test/var_vault.yml
+  checksum: e5bb141657e5ce60824bd03d5f8df86c88c88eb899ab94f31922a526557e35c3
