@@ -28,6 +28,18 @@
     group:      root
     mode:       +x,go-w
 
+# - name: Ensure S3 Cache
+#   community.docker.docker_container:
+#     name:                       minio
+#     image:                      minio/minio:latest
+#     ports:
+#       - 9000:9000
+#     volumes:
+#       - 
+#     restart_policy:             always
+#     container_default_behavior: compatibility
+
+
 - name: Ensure gitlab-runner registered
   ansible.builtin.shell: 
     cmd: gitlab-runner register {{ gitlab_runner_autoscaling_args | join(' ') }}
