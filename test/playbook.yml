@@ -11,7 +11,7 @@
           - --run-untagged
           - --locked=false
           - --non-interactive
-          - --registration-token ***REMOVED***
+          - --registration-token {{ gitlab_runner_registration_token }}
           - --docker-privileged=false
           - --docker-pull-policy=if-not-present 
           # - --docker-volumes='/cache'
