@@ -1,7 +1,8 @@
 ---
 
 - hosts: all
-  vars_files: var_vault.yml
+  vars_files: 
+    - var_vault.yml
   roles:
     - role: ../ansible-role-gitlab-runner-autoscaling
       vars:
