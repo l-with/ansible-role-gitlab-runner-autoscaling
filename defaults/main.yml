@@ -1,5 +1,7 @@
 ---
 
 gitlab_runner_autoscaling_docker_machine_driver_hetzner_version: 3.3.0
+gitlab_runner_name: gitlab-runner-broker
+gitlab_runner_unregister: no
 
 ...

@@ -40,8 +40,22 @@
 #     container_default_behavior: compatibility
 
 
-- name: Ensure gitlab-runner registered
+- name: Ensure register gitlab-runner
   ansible.builtin.shell: 
-    cmd: gitlab-runner register {{ gitlab_runner_autoscaling_args | join(' ') }}
+    cmd: gitlab-runner register --name {{ gitlab_runner_name }} {{ gitlab_runner_autoscaling_args | join(' ') }}
+          && touch ansible-shell-done-gitlab-runner-register
+          && rm -f ansible-shell-done-gitlab-runner-unregister
+  args:
+    creates: ansible-shell-done-gitlab-runner-register
+  when: not gitlab_runner_unregister
+
+- name: Ensure unregister gitlab-runner
+  ansible.builtin.shell: 
+    cmd: gitlab-runner unregister --name {{ gitlab_runner_name }}
+          && touch ansible-shell-done-gitlab-runner-unregister
+          && rm -f ansible-shell-done-gitlab-runner-register
+  args:
+    creates: ansible-shell-done-gitlab-runner-unregister
+  when: gitlab_runner_unregister
 
 ...
