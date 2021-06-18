@@ -49,6 +49,16 @@
     creates: ansible-shell-done-gitlab-runner-register
   when: not gitlab_runner_unregister
 
+- name: Ensure kill machines
+  ansible.builtin.command:
+    cmd: docker-machine kill `docker-machine ls -f '{{ '{{' }}.Name{{ '}}' }}'`
+  when: gitlab_runner_unregister
+
+- name: Ensure remove machines
+  ansible.builtin.shell:
+    cmd: yes | docker-machine rm `docker-machine ls -f {{ '{{' }}.Name{{ '}}' }}` || true
+  when: gitlab_runner_unregister
+
 - name: Ensure unregister gitlab-runner
   ansible.builtin.shell: 
     cmd: gitlab-runner unregister --name {{ gitlab_runner_name }}
