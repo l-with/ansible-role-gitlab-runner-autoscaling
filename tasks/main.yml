@@ -54,4 +54,13 @@
   ansible.builtin.include_tasks: cleanup.yml
   when: gitlab_runner_autoscaling_unregister
 
+- name: Ensure unregister gitlab-runner
+  ansible.builtin.shell: 
+    cmd: gitlab-runner unregister --name {{ gitlab_runner_autoscaling_name }}
+          && touch ansible-shell-done-gitlab-runner-unregister
+          && rm -f ansible-shell-done-gitlab-runner-register
+  args:
+    creates: ansible-shell-done-gitlab-runner-unregister
+  when: gitlab_runner_autoscaling_unregister
+
 ...

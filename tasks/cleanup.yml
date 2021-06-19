@@ -8,12 +8,4 @@
   ansible.builtin.shell:
     cmd: yes | docker-machine rm `docker-machine ls -f {{ '{{' }}.Name{{ '}}' }}` || true
 
-- name: Ensure unregister gitlab-runner
-  ansible.builtin.shell: 
-    cmd: gitlab-runner unregister --name {{ gitlab_runner_autoscaling_name }}
-          && touch ansible-shell-done-gitlab-runner-unregister
-          && rm -f ansible-shell-done-gitlab-runner-register
-  args:
-    creates: ansible-shell-done-gitlab-runner-unregister
-
 ...
