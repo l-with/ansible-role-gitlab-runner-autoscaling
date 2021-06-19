@@ -29,26 +29,7 @@
     mode:       +x,go-w
 
 - name: Ensure S3 Cache by minio
-  block:
-
-  - name: Ensure prepare community.docker.docker_container 
-    ansible.builtin.include_tasks: community.docker.docker_container.yml
-  
-  - name: Ensure minio
-    community.docker.docker_container:
-      name:    minio
-      image:   minio/minio:latest
-      command: server /export
-      ports:
-        - "{{ gitlab_runner_autoscaling_minio_port }}:9000"
-      volumes:
-        - "{{ gitlab_runner_autoscaling_minio_volume }}:/export"
-      env:
-        MINIO_ROOT_USER:     "{{ gitlab_runner_autoscaling_minio_root_user }}"
-        MINIO_ROOT_PASSWORD: "{{ gitlab_runner_autoscaling_minio_root_password }}"
-      restart_policy:             always
-      container_default_behavior: compatibility
-  
+  ansible.builtin.include_tasks: minio.yml
   when: gitlab_runner_autoscaling_s3_cache_minio
 
 - name: Ensure register gitlab-runner
@@ -62,25 +43,15 @@
     creates: ansible-shell-done-gitlab-runner-register
   when: not gitlab_runner_autoscaling_unregister
 
+- name: Ensure configure concurrent
+  ansible.builtin.lineinfile:
+    path:   /etc/gitlab-runner/config.toml
+    regexp: '^concurrent ='
+    line:   concurrent = {{ gitlab_runner_autoscaling_concurrent }}
+  when: not gitlab_runner_autoscaling_unregister
+
 - name: Ensure clean up gitlab-runner
-  block:
-
-  - name: Ensure kill machines
-    ansible.builtin.command:
-      cmd: docker-machine kill `docker-machine ls -f '{{ '{{' }}.Name{{ '}}' }}'`
-
-  - name: Ensure remove machines
-    ansible.builtin.shell:
-      cmd: yes | docker-machine rm `docker-machine ls -f {{ '{{' }}.Name{{ '}}' }}` || true
-
-  - name: Ensure unregister gitlab-runner
-    ansible.builtin.shell: 
-      cmd: gitlab-runner unregister --name {{ gitlab_runner_autoscaling_name }}
-            && touch ansible-shell-done-gitlab-runner-unregister
-            && rm -f ansible-shell-done-gitlab-runner-register
-    args:
-      creates: ansible-shell-done-gitlab-runner-unregister
-
+  ansible.builtin.include_tasks: cleanup.yml
   when: gitlab_runner_autoscaling_unregister
 
 ...

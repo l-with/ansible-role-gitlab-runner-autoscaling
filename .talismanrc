@@ -1,13 +1,7 @@
 fileignoreconfig:
 # is encrypted by ansible-vault
 - filename: test/var_vault.yml
-  checksum: e5bb141657e5ce60824bd03d5f8df86c88c88eb899ab94f31922a526557e35c3
-# is encrypted by ansible-vault
-- filename: test/var_vault.yml
-  checksum: 57d034feae9472a2269c25a505dfa39c2575a5432007c1d7aeedcee1203ca766
-# MINIO_ROOT_PASSWORD, gitlab_runner_autoscaling_minio_root_password are not exposed
-- filename: tasks/main.yml
-  checksum: c41c833f62f40101385e28e6e2b9235fd03bf5aa7d9f452eba42fac9e3e66bd8
-# is encrypted by ansible-vault
-- filename: test/var_vault.yml
   checksum: 273df0f052ae5984aae0a4b3fbce36842afbbc6f2763e57a8a86a552e6454128
+# MINIO_ROOT_PASSWORD, gitlab_runner_autoscaling_minio_root_password are not exposed
+- filename: tasks/minio.yml
+  checksum: 4e91534e47784c017b228de3480d4752a6b9f2d86f151896d2c6f48f17f59c31
