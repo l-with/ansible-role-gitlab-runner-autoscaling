@@ -33,7 +33,8 @@
           - --machine-machine-options "hetzner-server-type=cx31"
           - --machine-machine-options "hetzner-networks=gitlab-runner-network"
           - --machine-machine-options "hetzner-use-private-network=true"
-          - --machine-machine-options "engine-install-url=https://releases.rancher.com/install-docker/19.03.9.sh"
+          # s. https://www.marc-willmann.de/gitlab-runner-autoscale-in-der-hetzner-cloud
+          - --machine-machine-options "engine-install-url=https://releases.rancher.com/install-docker/19.03.9.sh" 
           # - --docker-allowed-images '*'
           # - --docker-allowed-images '${allowed_images_extra}'
           # - --docker-allowed-services 'redis:*'
