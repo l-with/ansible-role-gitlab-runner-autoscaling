@@ -1,30 +1,21 @@
 ---
 
-- name: Ensure software-properties-common is installed
-  ansible.builtin.apt:
-    name: software-properties-common
+- name: Ensure "{{ gitlab_runner_autoscaling_minio_volume }}/{{ gitlab_runner_autoscaling_s3_cache_name }}"
+  ansible.builtin.file:
+    path:  "{{ gitlab_runner_autoscaling_minio_volume }}/{{ gitlab_runner_autoscaling_s3_cache_name }}"
+    state: directory
+    mode:  +x,go-w
 
-- name: Ensure python is installed
-  ansible.builtin.apt:
-    name: python3
-
-- name: Ensure pip is installed
-  ansible.builtin.apt:
-    name: python3-pip
-
-- name: Ensure Python library docker
-  ansible.builtin.pip:
-    name: docker
-  
 - name: Ensure minio
   community.docker.docker_container:
     name:    minio
     image:   minio/minio:latest
     command: server /export
     ports:
-      - "{{ gitlab_runner_autoscaling_minio_port }}:9000"
+      - "{{ gitlab_runner_autoscaling_minio_expose }}:9000"
     volumes:
       - "{{ gitlab_runner_autoscaling_minio_volume }}:/export"
+      # - "{{ gitlab_runner_autoscaling_minio_home }}/.minio:/root/.minio"
     env:
       MINIO_ROOT_USER:     "{{ gitlab_runner_autoscaling_minio_root_user }}"
       MINIO_ROOT_PASSWORD: "{{ gitlab_runner_autoscaling_minio_root_password }}"
