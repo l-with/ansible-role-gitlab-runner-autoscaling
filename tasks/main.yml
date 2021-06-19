@@ -12,12 +12,12 @@
     GITLAB_RUNNER_DISABLE_SKEL: 'true'
 
 - name: Ensure install docker-machine
-  ansible.builtin.shell:
-    cmd: |
-      curl -L https://github.com/docker/machine/releases/download/v0.16.2/docker-machine-`uname -s`-`uname -m` >/tmp/docker-machine &&
-      chmod +x /tmp/docker-machine &&
-      sudo cp /tmp/docker-machine /usr/local/bin/docker-machine
-    creates: /usr/local/bin/docker-machine
+  ansible.builtin.get_url:
+    url:   https://github.com/docker/machine/releases/download/{{ gitlab_runner_autoscaling_docker_machine_version }}/docker-machine-Linux-x86_64
+    dest:  /usr/local/bin/docker-machine
+    owner: root
+    group: root
+    mode:  +x,go-w
 
 - name: Ensure install docker-machine-driver-hetzner
   ansible.builtin.unarchive:
@@ -28,44 +28,59 @@
     group:      root
     mode:       +x,go-w
 
-# - name: Ensure S3 Cache
-#   community.docker.docker_container:
-#     name:                       minio
-#     image:                      minio/minio:latest
-#     ports:
-#       - 9000:9000
-#     volumes:
-#       - 
-#     restart_policy:             always
-#     container_default_behavior: compatibility
+- name: Ensure S3 Cache by minio
+  block:
 
+  - name: Ensure prepare community.docker.docker_container 
+    ansible.builtin.include_tasks: community.docker.docker_container.yml
+  
+  - name: Ensure minio
+    community.docker.docker_container:
+      name:    minio
+      image:   minio/minio:latest
+      command: server /export
+      ports:
+        - "{{ gitlab_runner_autoscaling_minio_port }}:9000"
+      volumes:
+        - "{{ gitlab_runner_autoscaling_minio_volume }}:/export"
+      env:
+        MINIO_ROOT_USER:     "{{ gitlab_runner_autoscaling_minio_root_user }}"
+        MINIO_ROOT_PASSWORD: "{{ gitlab_runner_autoscaling_minio_root_password }}"
+      restart_policy:             always
+      container_default_behavior: compatibility
+  
+  when: gitlab_runner_autoscaling_s3_cache_minio
 
 - name: Ensure register gitlab-runner
   ansible.builtin.shell: 
-    cmd: gitlab-runner register --name {{ gitlab_runner_name }} {{ gitlab_runner_autoscaling_args | join(' ') }}
+    cmd: gitlab-runner register --name {{ gitlab_runner_autoscaling_name }} 
+            {{ gitlab_runner_autoscaling_args | join(' ') }}
+            {{ (gitlab_runner_autoscaling_s3_cache_minio_args | join(' ')) if gitlab_runner_autoscaling_s3_cache_minio else '' }}
           && touch ansible-shell-done-gitlab-runner-register
           && rm -f ansible-shell-done-gitlab-runner-unregister
   args:
     creates: ansible-shell-done-gitlab-runner-register
-  when: not gitlab_runner_unregister
+  when: not gitlab_runner_autoscaling_unregister
 
-- name: Ensure kill machines
-  ansible.builtin.command:
-    cmd: docker-machine kill `docker-machine ls -f '{{ '{{' }}.Name{{ '}}' }}'`
-  when: gitlab_runner_unregister
+- name: Ensure clean up gitlab-runner
+  block:
 
-- name: Ensure remove machines
-  ansible.builtin.shell:
-    cmd: yes | docker-machine rm `docker-machine ls -f {{ '{{' }}.Name{{ '}}' }}` || true
-  when: gitlab_runner_unregister
+  - name: Ensure kill machines
+    ansible.builtin.command:
+      cmd: docker-machine kill `docker-machine ls -f '{{ '{{' }}.Name{{ '}}' }}'`
 
-- name: Ensure unregister gitlab-runner
-  ansible.builtin.shell: 
-    cmd: gitlab-runner unregister --name {{ gitlab_runner_name }}
-          && touch ansible-shell-done-gitlab-runner-unregister
-          && rm -f ansible-shell-done-gitlab-runner-register
-  args:
-    creates: ansible-shell-done-gitlab-runner-unregister
-  when: gitlab_runner_unregister
+  - name: Ensure remove machines
+    ansible.builtin.shell:
+      cmd: yes | docker-machine rm `docker-machine ls -f {{ '{{' }}.Name{{ '}}' }}` || true
+
+  - name: Ensure unregister gitlab-runner
+    ansible.builtin.shell: 
+      cmd: gitlab-runner unregister --name {{ gitlab_runner_autoscaling_name }}
+            && touch ansible-shell-done-gitlab-runner-unregister
+            && rm -f ansible-shell-done-gitlab-runner-register
+    args:
+      creates: ansible-shell-done-gitlab-runner-unregister
+
+  when: gitlab_runner_autoscaling_unregister
 
 ...
