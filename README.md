@@ -36,9 +36,13 @@ if s3 cache via [minio](https://min.io/) should be provided
 
 the name of the s3 bucket shared by the GitLab runners
 
-### `gitlab_runner_autoscaling_minio_port`: `9000`
+### `gitlab_runner_autoscaling_minio_address`: `"{{ ansible_default_ipv4.address }}:9000"`
 
-the port minio is exposed to
+the address of minio for the GitLab runners
+
+### `gitlab_runner_autoscaling_minio_expose`: 9000
+
+the expose for the minio container
 
 ### `gitlab_runner_autoscaling_minio_volume`: `/srv/minio/export`
 
