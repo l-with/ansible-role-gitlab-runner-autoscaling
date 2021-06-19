@@ -1,0 +1,16 @@
+---
+
+- name: Ensure registry
+  community.docker.docker_container:
+    name:    registry
+    image:   registry:latest
+    ports:
+      - "{{ gitlab_runner_autoscaling_docker_proxy_expose }}:5000"
+    volumes:
+      - "{{ gitlab_runner_autoscaling_minio_volume }}/registry:/var/lib/registry"
+    env:
+      REGISTRY_PROXY_REMOTEURL: "{{ gitlab_runner_autoscaling_docker_proxy_remote_url }}"
+    restart_policy:             always
+    container_default_behavior: compatibility
+
+...

@@ -6,9 +6,12 @@
   roles:
     - role: ../ansible-role-gitlab-runner-autoscaling
       vars:
-        gitlab_runner_autoscaling_s3_cache_minio: yes
-        gitlab_runner_autoscaling_minio_address: 10.0.0.2:9000
-        gitlab_runner_autoscaling_minio_expose: 10.0.0.2:9000
+        gitlab_runner_autoscaling_s3_cache_minio:       yes
+        gitlab_runner_autoscaling_minio_address:        10.0.0.2:9000
+        gitlab_runner_autoscaling_minio_expose:         10.0.0.2:9000
+        gitlab_runner_autoscaling_docker_proxy:         yes
+        gitlab_runner_autoscaling_docker_proxy_address: 10.0.0.2:5000
+        gitlab_runner_autoscaling_docker_proxy_expose:  10.0.0.2:5000
         gitlab_runner_autoscaling_args:
           - --executor docker+machine
           - --url https://gitlab.with.de
@@ -30,8 +33,6 @@
           - --machine-machine-options "hetzner-server-type=cx31"
           - --machine-machine-options "hetzner-networks=gitlab-runner-network"
           - --machine-machine-options "hetzner-use-private-network=true"
-          # - --machine-machine-options "engine-registry-mirror=http://$MY_IP:6000"
-          # - --machine-machine-options "engine-insecure-registry=$MY_IP:6000"
           - --machine-machine-options "engine-install-url=https://releases.rancher.com/install-docker/19.03.9.sh"
           # - --docker-allowed-images '*'
           # - --docker-allowed-images '${allowed_images_extra}'

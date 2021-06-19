@@ -37,11 +37,16 @@
   ansible.builtin.include_tasks: minio.yml
   when: not gitlab_runner_autoscaling_unregister and gitlab_runner_autoscaling_s3_cache_minio
 
+- name: Ensure docker registry proxy
+  ansible.builtin.include_tasks: registry.yml
+  when: not gitlab_runner_autoscaling_unregister and gitlab_runner_autoscaling_docker_proxy
+
 - name: Ensure register gitlab-runner
   ansible.builtin.shell: 
     cmd: gitlab-runner register --name {{ gitlab_runner_autoscaling_name }} 
             {{ gitlab_runner_autoscaling_args | join(' ') }}
             {{ (gitlab_runner_autoscaling_s3_cache_minio_args | join(' ')) if gitlab_runner_autoscaling_s3_cache_minio else '' }}
+            {{ (gitlab_runner_autoscaling_docker_proxy_args   | join(' ')) if gitlab_runner_autoscaling_docker_proxy   else '' }}
           && touch ansible-shell-done-gitlab-runner-register
           && rm -f ansible-shell-done-gitlab-runner-unregister
   args:

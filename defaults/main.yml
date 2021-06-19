@@ -3,16 +3,15 @@
 gitlab_runner_autoscaling_docker_machine_version:                v0.16.2
 gitlab_runner_autoscaling_docker_machine_driver_hetzner_version: 3.3.0
 
-gitlab_runner_autoscaling_name:           gitlab-runner-broker
-gitlab_runner_autoscaling_concurrent:     5
-gitlab_runner_autoscaling_unregister:     no
+gitlab_runner_autoscaling_name:       gitlab-runner-broker
+gitlab_runner_autoscaling_concurrent: 5
+gitlab_runner_autoscaling_unregister: no
 
 gitlab_runner_autoscaling_s3_cache_minio: no
 gitlab_runner_autoscaling_s3_cache_name:  runner
 gitlab_runner_autoscaling_minio_address:  "{{ ansible_default_ipv4.address }}:9000"
 gitlab_runner_autoscaling_minio_expose:   9000
 gitlab_runner_autoscaling_minio_volume:   /srv/minio/export
-gitlab_runner_autoscaling_docker_proxy:   no
 
 gitlab_runner_autoscaling_s3_cache_minio_args:
   - --cache-shared
@@ -22,5 +21,15 @@ gitlab_runner_autoscaling_s3_cache_minio_args:
   - --cache-s3-secret-key {{ gitlab_runner_autoscaling_minio_root_password }}
   - --cache-s3-bucket-name {{ gitlab_runner_autoscaling_s3_cache_name }}
   - --cache-s3-insecure
+
+gitlab_runner_autoscaling_docker_proxy:            no
+gitlab_runner_autoscaling_docker_proxy_address:    "{{ ansible_default_ipv4.address }}:5000"
+gitlab_runner_autoscaling_docker_proxy_url:        "http://{{ gitlab_runner_autoscaling_docker_proxy_address }}"
+gitlab_runner_autoscaling_docker_proxy_expose:     5000
+gitlab_runner_autoscaling_docker_proxy_remote_url: https://registry-1.docker.io
+
+gitlab_runner_autoscaling_docker_proxy_args:
+  - --machine-machine-options "engine-registry-mirror={{ gitlab_runner_autoscaling_docker_proxy_url }}"
+  - --machine-machine-options "engine-insecure-registry={{ gitlab_runner_autoscaling_docker_proxy_address }}"
 
 ...

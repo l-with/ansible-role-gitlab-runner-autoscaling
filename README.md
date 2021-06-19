@@ -1,20 +1,20 @@
 # Ansible Role GitLab Runner Autoscaling
 
-Installs and registers a GitLab Runner with autoscaling via docker-machine
+Installs and registers a GitLab Runner with autoscaling via docker-machine and optionally a S3 cache and a docker registry proxy
 
 ## Role Variables
 
 ### `gitlab_runner_autoscaling_docker_machine_version`: `v0.16.2`
 
-version of docker-machine
+the version of docker-machine
 
 ### `gitlab_runner_autoscaling_docker_machine_driver_hetzner_version`: `3.3.0`
 
-version of docker-machine-driver-hetzner
+the version of docker-machine-driver-hetzner
 
 ### `gitlab_runner_autoscaling_args`
 
-arguments for gitlab-runner
+the arguments for gitlab-runner (except the arguments for s3 cache and registry proxy)
 
 ### `gitlab_runner_autoscaling_name`: `gitlab-runner-broker`
 
@@ -26,7 +26,7 @@ if the GitLab runner should be unregistered
 
 ### `gitlab_runner_autoscaling_concurrent`: `5`
 
-allowed number of concurrent GitLab runners
+the allowed number of concurrent GitLab runners
 
 ### `gitlab_runner_autoscaling_s3_cache_minio`: `no`
 
@@ -61,12 +61,42 @@ the password of the minio root user
 default is
 
 ```yml
+  - --cache-shared
   - --cache-type s3
-  - --cache-s3-server-address {{ ansible_default_ipv4.address }}:{{ gitlab_runner_autoscaling_minio_port }}
+  - --cache-s3-server-address {{ gitlab_runner_autoscaling_minio_address }}
   - --cache-s3-access-key {{ gitlab_runner_autoscaling_minio_root_user }}
-  - --cache-s3-secret-key {{ gitlab_runner_autoscaling_minio_root_password}}
+  - --cache-s3-secret-key {{ gitlab_runner_autoscaling_minio_root_password }}
   - --cache-s3-bucket-name {{ gitlab_runner_autoscaling_s3_cache_name }}
-  - --cache-s3-insecure true
+  - --cache-s3-insecure
 ```
 
 the arguments used for registering the GitLab runner if gitlab_runner_autoscaling_s3_cache_name is yes
+
+### `gitlab_runner_autoscaling_docker_proxy`: `no`
+
+if docker registry cache via [registry](https://hub.docker.com/_/registry) should be provided
+
+### `gitlab_runner_autoscaling_docker_proxy_address`: `"{{ ansible_default_ipv4.address }}:5000"`
+
+the address of the docker registry proxy for the GitLab runners
+
+### `gitlab_runner_autoscaling_docker_proxy_url`: `"http://{{ gitlab_runner_autoscaling_docker_proxy_address }}"`
+
+the url of the docker registry proxy for the GitLab runners
+
+### `gitlab_runner_autoscaling_docker_proxy_expose`: `5000`
+
+the expose for the registry container
+
+### `gitlab_runner_autoscaling_docker_proxy_remote_url`: `https://registry-1.docker.io`
+
+the value for `REGISTRY_PROXY_REMOTEURL` for the registry container
+
+### `gitlab_runner_autoscaling_docker_proxy_args`
+
+default is
+
+```yml
+  - --machine-machine-options "engine-registry-mirror={{ gitlab_runner_autoscaling_docker_proxy_url }}"
+  - --machine-machine-options "engine-insecure-registry={{ gitlab_runner_autoscaling_docker_proxy_address }}"
+```
