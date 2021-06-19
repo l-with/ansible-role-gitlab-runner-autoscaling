@@ -1,7 +1,7 @@
 ---
 
 dependencies:
-  - name: docker
+  - role: docker
     src: git@gitlab.with.de:ansible/ansible-role-docker.git
     scm: git
     version: 0.0.4
