@@ -27,10 +27,15 @@
     owner:      root
     group:      root
     mode:       +x,go-w
+  when: not gitlab_runner_autoscaling_unregister
+
+- name: Ensure prepare community.docker.docker_container
+  ansible.builtin.include_tasks: docker_container.yml
+  when: not gitlab_runner_autoscaling_unregister and (gitlab_runner_autoscaling_s3_cache_minio or gitlab_runner_autoscaling_docker_proxy)
 
 - name: Ensure S3 Cache by minio
   ansible.builtin.include_tasks: minio.yml
-  when: gitlab_runner_autoscaling_s3_cache_minio
+  when: not gitlab_runner_autoscaling_unregister and gitlab_runner_autoscaling_s3_cache_minio
 
 - name: Ensure register gitlab-runner
   ansible.builtin.shell: 
