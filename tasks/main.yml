@@ -1,13 +1,22 @@
 ---
 
 - name: Ensure GitLab runner repository
-  ansible.builtin.shell:
-    cmd:     curl https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh | sudo bash
-    creates: /etc/apt/sources.list.d/runner_gitlab-runner.list
+  ansible.builtin.get_url:
+    url:  https://packages.gitlab.com/install/repositories/runner/gitlab-runner/config_file.list?os={{ ansible_distribution }}&dist={{ ansible_distribution_release }}
+    dest: /etc/apt/sources.list.d/runner_gitlab-runner.list
+    mode:  +x,go-w
+
+- name: Ensure GitLab Runner repository GPG key
+  ansible.builtin.apt_key:
+    url: https://packages.gitlab.com/runner/gitlab-runner/gpgkey
+
+- name: Ensure apt cache update
+  ansible.builtin.apt:
+    update_cache: yes
 
 - name: Ensure install Gitlab runner     
   ansible.builtin.apt:
-    name: gitlab-runner  
+    name:         gitlab-runner
   environment:
     GITLAB_RUNNER_DISABLE_SKEL: 'true'
 
