@@ -2,6 +2,10 @@
 
 Installs and registers a GitLab Runner with autoscaling via docker-machine and optionally a S3 cache and a docker registry proxy
 
+## Dependencies
+
+This role needs docker to be installed.
+
 ## Role Variables
 
 ### `gitlab_runner_autoscaling_docker_machine_version`: `v0.16.2`
