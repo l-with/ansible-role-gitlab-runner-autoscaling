@@ -104,3 +104,7 @@ default is
   - --machine-machine-options "engine-registry-mirror={{ gitlab_runner_autoscaling_docker_proxy_url }}"
   - --machine-machine-options "engine-insecure-registry={{ gitlab_runner_autoscaling_docker_proxy_address }}"
 ```
+
+### `gitlab_runner_autoscaling_debug`: `no`
+
+if some debug information should be printed
