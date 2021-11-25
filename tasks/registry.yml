@@ -13,4 +13,13 @@
     restart_policy:             always
     container_default_behavior: compatibility
 
+- name: Ensure registry garbage collection
+  ansible.builtin.cron:
+    cron_file: "ansible_docker_registry_garbage-collect"
+    user: root
+    name: "ansible docker registry garbage-collect"
+    job:  docker exec registry bin/registry garbage-collect /etc/docker/registry/config.yml -m
+    hour: "1"
+    minute: "0"
+
 ...
