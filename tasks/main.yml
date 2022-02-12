@@ -12,9 +12,9 @@
 
 - name: Ensure apt cache update
   ansible.builtin.apt:
-    update_cache: yes
+    update_cache: true
 
-- name: Ensure install Gitlab runner     
+- name: Ensure install Gitlab runner
   ansible.builtin.apt:
     name:         gitlab-runner
   environment:
@@ -30,7 +30,7 @@
 
 - name: Ensure install docker-machine-driver-hetzner
   ansible.builtin.unarchive:
-    remote_src: yes
+    remote_src: true
     src:        https://github.com/JonasProgrammer/docker-machine-driver-hetzner/releases/download/{{ gitlab_runner_autoscaling_docker_machine_driver_hetzner_version }}/docker-machine-driver-hetzner_{{ gitlab_runner_autoscaling_docker_machine_driver_hetzner_version }}_linux_amd64.tar.gz
     dest:       /usr/local/bin
     owner:      root
@@ -52,15 +52,15 @@
 
 - name: Print register gitlab-runner command
   ansible.builtin.debug:
-    msg: gitlab-runner register --name {{ gitlab_runner_autoscaling_name }} 
+    msg: gitlab-runner register --name {{ gitlab_runner_autoscaling_name }}
             {{ gitlab_runner_autoscaling_args | join(' ') }}
             {{ (gitlab_runner_autoscaling_s3_cache_minio_args | join(' ')) if gitlab_runner_autoscaling_s3_cache_minio else '' }}
             {{ (gitlab_runner_autoscaling_docker_proxy_args   | join(' ')) if gitlab_runner_autoscaling_docker_proxy   else '' }}
   when: gitlab_runner_autoscaling_debug
-  
+
 - name: Ensure register gitlab-runner
-  ansible.builtin.shell: 
-    cmd: gitlab-runner register --name {{ gitlab_runner_autoscaling_name }} 
+  ansible.builtin.shell:
+    cmd: gitlab-runner register --name {{ gitlab_runner_autoscaling_name }}
             {{ gitlab_runner_autoscaling_args | join(' ') }}
             {{ (gitlab_runner_autoscaling_s3_cache_minio_args | join(' ')) if gitlab_runner_autoscaling_s3_cache_minio else '' }}
             {{ (gitlab_runner_autoscaling_docker_proxy_args   | join(' ')) if gitlab_runner_autoscaling_docker_proxy   else '' }}
@@ -82,7 +82,7 @@
   when: gitlab_runner_autoscaling_unregister
 
 - name: Ensure unregister gitlab-runner
-  ansible.builtin.shell: 
+  ansible.builtin.shell:
     cmd: gitlab-runner unregister --name {{ gitlab_runner_autoscaling_name }}
           && touch ansible-shell-done-gitlab-runner-unregister
           && rm -f ansible-shell-done-gitlab-runner-register
