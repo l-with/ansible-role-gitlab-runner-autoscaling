@@ -4,7 +4,7 @@ galaxy_info:
   role_name: gitlab_runner_autoscaling
   description: install gitlab-runner autoscaling
   author: l_with
-  license: MIT
+  license: Creative Commons Attribution-NonCommercial 4.0 International Public License
   license_file: LICENSE
   min_ansible_version: 2.9
   platforms:
