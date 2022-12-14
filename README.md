@@ -11,7 +11,7 @@ This role needs docker to be installed.
 | group | variable | default | description |
 | --- | --- | --- | --- |
 | | `gitlab_runner_autoscaling_docker_machine_version` | `v0.16.2` | the version of [docker-machine](https://github.com/docker/machine/releases) |
-| | `gitlab_runner_autoscaling_docker_machine_driver_hetzner_version` | `3.3.0` | the version of [docker-machine-driver-hetzner](https://github.com/JonasProgrammer/docker-machine-driver-hetzner/releases) |
+| | `gitlab_runner_autoscaling_docker_machine_driver_hetzner_version` | `3.10.0` | the version of [docker-machine-driver-hetzner](https://github.com/JonasProgrammer/docker-machine-driver-hetzner/releases) |
 | | `gitlab_runner_autoscaling_args` | | the arguments for gitlab-runner (except the arguments for s3 cache and registry proxy) |
 | | `gitlab_runner_autoscaling_name` | `gitlab-runner-broker` | the name of the GitLab runner |
 | | `gitlab_runner_autoscaling_unregister` | `false` | if the GitLab runner should be unregistered |
