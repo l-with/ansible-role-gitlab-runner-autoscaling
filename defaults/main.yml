@@ -1,11 +1,15 @@
 ---
 
-gitlab_runner_autoscaling_docker_machine_version:                v0.16.2
+gitlab_runner_autoscaling_docker_machine_version:                v0.16.2-gitlab.18
 gitlab_runner_autoscaling_docker_machine_driver_hetzner_version: 3.10.0
 
-gitlab_runner_autoscaling_name:       gitlab-runner-broker
-gitlab_runner_autoscaling_concurrent: 5
-gitlab_runner_autoscaling_unregister: false
+gitlab_runner_autoscaling_name:         gitlab-runner-broker
+gitlab_runner_autoscaling_concurrent:   5
+gitlab_runner_autoscaling_unregister:   false
+gitlab_runner_autoscaling_tag_list:     ""
+gitlab_runner_autoscaling_run_untagged: yes
+gitlab_runner_autoscaling_locked:       "true"
+
 
 gitlab_runner_autoscaling_s3_cache_minio: false
 gitlab_runner_autoscaling_s3_cache_name:  runner
