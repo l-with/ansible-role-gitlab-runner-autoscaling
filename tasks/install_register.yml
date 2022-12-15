@@ -2,7 +2,7 @@
 
 - name: Ensure GitLab runner repository
   ansible.builtin.get_url:
-    url:  https://packages.gitlab.com/install/repositories/runner/gitlab-runner/config_file.list?os={{ ansible_distribution }}&dist={{ ansible_distribution_release }}
+    url:  https://gitlab.com/gitlab-org/ci-cd/docker-machine/-/releases/v0.16.2-gitlab.18/downloads/docker-machine-{{ ansible_system }}-{{ ansible_architecture }}
     dest: /etc/apt/sources.list.d/runner_gitlab-runner.list
     mode:  +x,go-w
 
@@ -57,6 +57,9 @@
 - name: Print register gitlab-runner command
   ansible.builtin.debug:
     msg: gitlab-runner register --name {{ gitlab_runner_autoscaling_name }}
+            --tag-list="{{ gitlab_runner_autoscaling_tag_list }}"
+            {{ '--run-untagged' if gitlab_runner_autoscaling_run_untagged else '' }}
+            --locked="{{ gitlab_runner_autoscaling_locked }}"
             {{ gitlab_runner_autoscaling_args | join(' ') }}
             {{ (gitlab_runner_autoscaling_s3_cache_minio_args | join(' ')) if gitlab_runner_autoscaling_s3_cache_minio else '' }}
             {{ (gitlab_runner_autoscaling_docker_proxy_args   | join(' ')) if gitlab_runner_autoscaling_docker_proxy   else '' }}
