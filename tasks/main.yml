@@ -1,93 +1,11 @@
 ---
 
-- name: Ensure GitLab runner repository
-  ansible.builtin.get_url:
-    url:  https://packages.gitlab.com/install/repositories/runner/gitlab-runner/config_file.list?os={{ ansible_distribution }}&dist={{ ansible_distribution_release }}
-    dest: /etc/apt/sources.list.d/runner_gitlab-runner.list
-    mode:  +x,go-w
-
-- name: Ensure GitLab Runner repository GPG key
-  ansible.builtin.apt_key:
-    url: https://packages.gitlab.com/runner/gitlab-runner/gpgkey
-
-- name: Ensure apt cache update
-  ansible.builtin.apt:
-    update_cache: true
-
-- name: Ensure install Gitlab runner
-  ansible.builtin.apt:
-    name:         gitlab-runner
-  environment:
-    GITLAB_RUNNER_DISABLE_SKEL: 'true'
-
-- name: Ensure install docker-machine
-  ansible.builtin.get_url:
-    url:   https://github.com/docker/machine/releases/download/{{ gitlab_runner_autoscaling_docker_machine_version }}/docker-machine-Linux-x86_64
-    dest:  /usr/local/bin/docker-machine
-    owner: root
-    group: root
-    mode:  +x,go-w
-
-- name: Ensure install docker-machine-driver-hetzner
-  ansible.builtin.unarchive:
-    remote_src: true
-    src:        https://github.com/JonasProgrammer/docker-machine-driver-hetzner/releases/download/{{ gitlab_runner_autoscaling_docker_machine_driver_hetzner_version }}/docker-machine-driver-hetzner_{{ gitlab_runner_autoscaling_docker_machine_driver_hetzner_version }}_linux_amd64.tar.gz
-    dest:       /usr/local/bin
-    owner:      root
-    group:      root
-    mode:       +x,go-w
+- name: Ensure GitLab runner install and register
+  ansible.builtin.include_tasks: install_register.yml
   when: not gitlab_runner_autoscaling_unregister
 
-- name: Ensure prepare community.docker.docker_container
-  ansible.builtin.include_tasks: docker_container.yml
-  when: not gitlab_runner_autoscaling_unregister and (gitlab_runner_autoscaling_s3_cache_minio or gitlab_runner_autoscaling_docker_proxy)
-
-- name: Ensure S3 Cache by minio
-  ansible.builtin.include_tasks: minio.yml
-  when: not gitlab_runner_autoscaling_unregister and gitlab_runner_autoscaling_s3_cache_minio
-
-- name: Ensure docker registry proxy
-  ansible.builtin.include_tasks: registry.yml
-  when: not gitlab_runner_autoscaling_unregister and gitlab_runner_autoscaling_docker_proxy
-
-- name: Print register gitlab-runner command
-  ansible.builtin.debug:
-    msg: gitlab-runner register --name {{ gitlab_runner_autoscaling_name }}
-            {{ gitlab_runner_autoscaling_args | join(' ') }}
-            {{ (gitlab_runner_autoscaling_s3_cache_minio_args | join(' ')) if gitlab_runner_autoscaling_s3_cache_minio else '' }}
-            {{ (gitlab_runner_autoscaling_docker_proxy_args   | join(' ')) if gitlab_runner_autoscaling_docker_proxy   else '' }}
-  when: gitlab_runner_autoscaling_debug
-
-- name: Ensure register gitlab-runner
-  ansible.builtin.shell:
-    cmd: gitlab-runner register --name {{ gitlab_runner_autoscaling_name }}
-            {{ gitlab_runner_autoscaling_args | join(' ') }}
-            {{ (gitlab_runner_autoscaling_s3_cache_minio_args | join(' ')) if gitlab_runner_autoscaling_s3_cache_minio else '' }}
-            {{ (gitlab_runner_autoscaling_docker_proxy_args   | join(' ')) if gitlab_runner_autoscaling_docker_proxy   else '' }}
-          && touch ansible-shell-done-gitlab-runner-register
-          && rm -f ansible-shell-done-gitlab-runner-unregister
-  args:
-    creates: ansible-shell-done-gitlab-runner-register
-  when: not gitlab_runner_autoscaling_unregister
-
-- name: Ensure configure concurrent
-  ansible.builtin.lineinfile:
-    path:   /etc/gitlab-runner/config.toml
-    regexp: '^concurrent ='
-    line:   concurrent = {{ gitlab_runner_autoscaling_concurrent }}
-  when: not gitlab_runner_autoscaling_unregister
-
-- name: Ensure clean up gitlab-runner
-  ansible.builtin.include_tasks: cleanup.yml
-  when: gitlab_runner_autoscaling_unregister
-
-- name: Ensure unregister gitlab-runner
-  ansible.builtin.shell:
-    cmd: gitlab-runner unregister --name {{ gitlab_runner_autoscaling_name }}
-          && touch ansible-shell-done-gitlab-runner-unregister
-          && rm -f ansible-shell-done-gitlab-runner-register
-  args:
-    creates: ansible-shell-done-gitlab-runner-unregister
+- name: Ensure GitLab runner unregister
+  ansible.builtin.include_tasks: unregister.yml
   when: gitlab_runner_autoscaling_unregister
 
 ...
