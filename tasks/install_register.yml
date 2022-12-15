@@ -2,7 +2,7 @@
 
 - name: Ensure GitLab runner repository
   ansible.builtin.get_url:
-    url:  https://gitlab.com/gitlab-org/ci-cd/docker-machine/-/releases/v0.16.2-gitlab.18/downloads/docker-machine-{{ ansible_system }}-{{ ansible_architecture }}
+    url:  https://gitlab.com/gitlab-org/ci-cd/docker-machine/-/releases/{{ gitlab_runner_autoscaling_docker_machine_version }}/downloads/docker-machine-{{ ansible_system }}-{{ ansible_architecture }}
     dest: /etc/apt/sources.list.d/runner_gitlab-runner.list
     mode:  +x,go-w
 
