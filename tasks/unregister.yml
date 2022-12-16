@@ -15,5 +15,6 @@
   ansible.builtin.file:
     dest:  /etc/gitlab-runner/config.toml
     state: absent
+  failed_when: False
 
 ...
