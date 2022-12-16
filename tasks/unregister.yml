@@ -11,4 +11,9 @@
     creates: ansible-shell-done-gitlab-runner-unregister
   failed_when: False
 
+- name: Ensure remove /etc/gitlab-runner/config.toml
+  ansible.builtin.file:
+    dest:  /etc/gitlab-runner/config.toml
+    state: absent
+
 ...
