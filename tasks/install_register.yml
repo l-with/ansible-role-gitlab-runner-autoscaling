@@ -27,7 +27,7 @@
 
 - name: Ensure install docker-machine
   ansible.builtin.get_url:
-    url:   https://gitlab-docker-machine-downloads.s3.amazonaws.com/{{ gitlab_runner_autoscaling_docker_machine_version }}/docker-machine--{{ ansible_system }}-{{ ansible_architecture }}
+    url:   https://gitlab-docker-machine-downloads.s3.amazonaws.com/{{ gitlab_runner_autoscaling_docker_machine_version }}/docker-machine-{{ ansible_system }}-{{ ansible_architecture }}
     dest:  /usr/local/bin/docker-machine
     owner: root
     group: root
